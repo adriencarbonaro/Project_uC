@@ -14,3 +14,7 @@ Porte activé si :
 - Microcontrôleur PIC18F4550
 - Capteur IR Sharp
 - Servomoteur
+
+## Descriptions fichiers
+Fichiers ServoTest#NUM gèrent le servomoteur commandé par un bouton ou par le PC.
+Fichiers IRSensor#NUM gèrent l'ajout du capteur IR

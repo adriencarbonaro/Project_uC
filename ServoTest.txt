@@ -1,0 +1,82 @@
+/* 
+ * Programme rotation Servo
+ * dans un sens puis dans l'autre
+ */
+
+#include <p18f4550.h>
+
+
+#pragma config FOSC = HS   //oscillator HS
+#pragma config PWRT = OFF
+#pragma config BOR = OFF
+#pragma config WDT = OFF   //Disable watchDog
+#pragma config LVP = OFF   //Disable low voltage programmig
+#pragma config DEBUG = OFF //Debug ON
+
+/**********************/
+/* Initialisation PWM */
+/**********************/
+void PWM_Init()
+{
+    TRISCbits.TRISC2 = 0;  /* Pin CCP1 en Output pour le PWM */
+    unsigned int duty_cycle;  
+    
+    /* On configure le registre pour avoir un PWM */
+    /* 0x0C = 0000 1100 (Voir rapport pour le detail) */
+    CCP1CON = 0x0C;
+      
+    /* On configure le registre pour marcher en 500kHz d'horloge interne */
+    /* 0x32 = 0011 0010 (Voir rapport pour le detail) */
+    OSCCON=0x32;         
+    
+    /* Periode correspondant à 50Hz (voir Rapport pour le detail) */ 
+    PR2=156;             
+    
+    /* On initialise le Duty Cycle */
+    CCPR1L=1;
+    
+    /* On configure le registre T2CON pour avoir un Prescaler :16 */
+    /* et le Timer 2 en ON */
+    /* 0x06 = 0000 0110 (Voir rapport pour le detail) */
+    T2CON=0x06;
+    
+    /* On initialise le Timer 2 à 0 */
+    TMR2 = 0;
+}
+
+void SetDutyCycleTo(int Duty_cycle)
+{
+    CCPR1L = Duty_cycle;
+}
+
+
+void delay(unsigned int val)
+{
+     unsigned int i,j;
+        for(i=0;i<val;i++)
+            for(j=0;j<10;j++);
+}
+
+int main() 
+{
+    PWM_Init(); /* On initialise le PWM */
+    int i=0;
+    
+    while(1)
+    {
+        // 5  correspond à  3% de Duty Cycle (PR2=156)
+        // 19 correspond à 12% de Duty Cycle (PR2=156)
+        for(i=5; i<19; i++){
+            SetDutyCycleTo(i);
+            delay(500);
+        }
+        
+        for(i=19; i>5; i--){
+            SetDutyCycleTo(i); 
+            delay(500);
+        }
+    }
+}
+
+
+

@@ -1,0 +1,25 @@
+Explications détaillées fonctionnement projet Microcontrôleur :
+
+-----------
+--- PWM ---
+-----------
+
+
+Le PWM (Pulse Width Modulation) est une technique grâce à laquelle
+on fait varier la largeur d'une impulsion,tout en gardant constante la fréquence de l'onde.
+
+La periode d'un cycle consiste en un cycle ON (5V) et un cycle OFF (0V).
+La fraction d'un cycle ON sur la periode s'appelle le "duty cycle".
+
+DutyCycle (%) = ( Temps_ON / Periode ) x 100
+
+Exemple : Une pulsation ON de 2ms sur une periode de 10ms aura un duty cycle de :
+D = 2ms / 10ms = 20%.
+
+Grâce au PWM, on peut controler la puissance délivrée au système en utilisant un signal ON-OFF.
+On peut par exemple contrôler la vitesse d'un moteur courant continue, 
+changer l'intensité d'une LED, ou l'angle d'un servomoteur.
+On peut aussi générer un signal sinusoidal.
+
+
+

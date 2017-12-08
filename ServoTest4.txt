@@ -1,0 +1,97 @@
+/* 
+ * Programme rotation Servo
+ * Si on appuie sur le bouton,
+ * On change la position du servomoteur
+ */
+
+#include <p18f4550.h>
+#include <stdio.h>
+#include <math.h>
+
+#pragma config FOSC = HS 		// oscillator HS
+#pragma config PWRT = OFF
+#pragma config BOR = OFF
+#pragma config WDT = OFF 		// Disable watchDog
+#pragma config LVP = OFF 		// Disable low voltage programmig
+#pragma config DEBUG = OFF		// Debug ON
+
+#define BOUTON RC0
+#define LED RC1
+#define SERVO RC2
+
+#define GAUCHE   5 /*  3% of duty cycle */
+#define HAUT    11 /*  7% of duty cycle */
+#define DROITE  19 /* 12% of duty cycle */ 
+
+/**********************/
+/* Initialisation PWM */
+/**********************/
+void PWM_Init()
+{
+    TRISCbits.TRISC2 = 0;  /* Pin CCP1 en Output pour le PWM */
+    TRISCbits.TRISC0 = 1;  /* Bouton en Input pin RC0 */
+    TRISCbits.TRISC1 = 0;  /* Led en OUTPUT pin RC1 */
+    
+    /* On configure le registre pour avoir un PWM */
+    /* 0x0C = 0000 1100 (Voir rapport pour le detail) */
+    CCP1CON = 0x0C;
+      
+    /* On configure le registre pour marcher en 500kHz d'horloge interne */
+    /* 0x32 = 0011 0010 (Voir rapport pour le detail) */
+    OSCCON=0x32;         
+    
+    /* Periode correspondant à 50Hz (voir Rapport pour le detail) */ 
+    PR2=156;             
+    
+    /* On initialise le Duty Cycle */
+    CCPR1L=1;
+    
+    /* On configure le registre T2CON pour avoir un Prescaler :16 */
+    /* et le Timer 2 en ON */
+    /* 0x06 = 0000 0110 (Voir rapport pour le detail) */
+    T2CON=0x06;
+    
+    /* On ititialise le Timer 2 à 0 */
+    TMR2 = 0;
+}
+
+void SetDutyCycleTo(int Duty_cycle)
+{
+    CCPR1L = Duty_cycle;
+}
+
+
+void delay(unsigned int val)
+{
+     unsigned int i,j;
+        for(i=0;i<val;i++)
+            for(j=0;j<10;j++);
+}
+
+int fermerPorte(int val){
+    LED = 1;
+    if(val == 0) SetDutyCycleTo(GAUCHE);
+    else if(val == 1) SetDutyCycleTo(HAUT);
+    else SetDutyCycleTo(DROITE);
+    delay(1000);
+    LED = 0;
+    val = (val+1)%3;
+    return val;
+}
+
+int main() 
+{
+    BOUTON = 0; /* Bouton en Input pin RC0 */
+    LED = 0; /* Led en OUTPUT pin RC1   */
+    int i = 0;
+    PWM_Init(); /* Initialize PWM */
+        
+    while(1)
+    {            
+        if(BOUTON == 1){
+           i = fermerPorte(i);
+        }
+        else{};
+    }
+}
+
